@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 790" width="960" height="790"
+     font-family="Arial, sans-serif">
+
+  <!-- Background -->
+  <rect width="960" height="790" fill="#f5f4ef"/>
+
+  <!-- Title -->
+  <text x="480" y="29" text-anchor="middle" font-size="16" font-weight="bold" fill="#111">
+    CircuitPython RGB LED Controller — Circuit Diagram
+  </text>
+  <line x1="20" y1="38" x2="940" y2="38" stroke="#bbb" stroke-width="1"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ARDUINO BOARD
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="205" y="58" width="170" height="490" rx="8" fill="#1a5c2e" stroke="#0b3318" stroke-width="2.5"/>
+
+  <!-- Board label -->
+  <text x="290" y="80"  text-anchor="middle" font-size="12" font-weight="bold" fill="white">ARDUINO</text>
+  <text x="290" y="95"  text-anchor="middle" font-size="9"  fill="#a8e6b8">CircuitPython Board</text>
+
+  <!-- USB connector hint -->
+  <rect x="248" y="533" width="84" height="12" rx="3" fill="#444" stroke="#222" stroke-width="1"/>
+  <text x="290" y="543" text-anchor="middle" font-size="8" fill="white">USB</text>
+
+  <!-- RIGHT side labels (D2–D9), y: 120,165,210,255,300,345,390,435 -->
+  <text x="363" y="124" text-anchor="end" font-size="9" fill="#ccffcc">D2</text>
+  <text x="363" y="169" text-anchor="end" font-size="9" fill="#ccffcc">D3</text>
+  <text x="363" y="214" text-anchor="end" font-size="9" fill="#ccffcc">D4</text>
+  <text x="363" y="259" text-anchor="end" font-size="9" fill="#ccffcc">D5</text>
+  <text x="363" y="304" text-anchor="end" font-size="9" fill="#ccffcc">D6</text>
+  <text x="363" y="349" text-anchor="end" font-size="9" fill="#ccffcc">D7</text>
+  <text x="363" y="394" text-anchor="end" font-size="9" fill="#ccffcc">D8</text>
+  <text x="363" y="439" text-anchor="end" font-size="9" fill="#ffe066">D9</text>
+
+  <!-- RIGHT side pin stubs (board edge → x=400) -->
+  <line x1="375" y1="120" x2="400" y2="120" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="165" x2="400" y2="165" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="210" x2="400" y2="210" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="255" x2="400" y2="255" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="300" x2="400" y2="300" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="345" x2="400" y2="345" stroke="#b8a050" stroke-width="2"/>
+  <line x1="375" y1="390" x2="400" y2="390" stroke="#b8a050" stroke-width="2"/>
+  <!-- D9 stub (yellow) -->
+  <line x1="375" y1="435" x2="400" y2="435" stroke="#ffe066" stroke-width="2"/>
+
+  <!-- LEFT side labels (+5V, GND) -->
+  <text x="218" y="124" font-size="9" fill="#ffaaaa">+5V</text>
+  <text x="218" y="169" font-size="9" fill="#aaaaff">GND</text>
+
+  <!-- LEFT side pin stubs (x=205 → x=185) -->
+  <line x1="205" y1="120" x2="180" y2="120" stroke="#b8a050" stroke-width="2"/>
+  <line x1="205" y1="165" x2="180" y2="165" stroke="#b8a050" stroke-width="2"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       HELPER DEFINITIONS: GND symbol template (inline per instance)
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- ═══════════════════════════════════════════════════════
+       BUTTON CIRCUITS  (D2–D8, right side)
+       Each: wire → left contact → switch arm → right contact → GND symbol
+       Switch contacts span x=430..468; arm from left contact angled up-right
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- ── Button 1 (D2, y=120): Toggle Red ── -->
+  <line x1="400" y1="120" x2="430" y2="120" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="120" r="3" fill="#333"/>
+  <line x1="432" y1="120" x2="464" y2="106" stroke="#333" stroke-width="1.5"/><!-- arm -->
+  <circle cx="468" cy="120" r="3" fill="#333"/>
+  <line x1="468" y1="120" x2="500" y2="120" stroke="#333" stroke-width="1.5"/>
+  <!-- GND symbol -->
+  <line x1="500" y1="120" x2="500" y2="134" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="134" x2="512" y2="134" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="139" x2="508" y2="139" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="144" x2="504" y2="144" stroke="#333" stroke-width="2"/>
+  <!-- Label -->
+  <text x="518" y="124" font-size="10" fill="#cc0000" font-weight="bold">BTN 1</text>
+  <text x="565" y="124" font-size="10" fill="#555">Toggle Red</text>
+
+  <!-- ── Button 2 (D3, y=165): Toggle Green ── -->
+  <line x1="400" y1="165" x2="430" y2="165" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="165" r="3" fill="#333"/>
+  <line x1="432" y1="165" x2="464" y2="151" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="165" r="3" fill="#333"/>
+  <line x1="468" y1="165" x2="500" y2="165" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="165" x2="500" y2="179" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="179" x2="512" y2="179" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="184" x2="508" y2="184" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="189" x2="504" y2="189" stroke="#333" stroke-width="2"/>
+  <text x="518" y="169" font-size="10" fill="#007700" font-weight="bold">BTN 2</text>
+  <text x="565" y="169" font-size="10" fill="#555">Toggle Green</text>
+
+  <!-- ── Button 3 (D4, y=210): Toggle Blue ── -->
+  <line x1="400" y1="210" x2="430" y2="210" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="210" r="3" fill="#333"/>
+  <line x1="432" y1="210" x2="464" y2="196" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="210" r="3" fill="#333"/>
+  <line x1="468" y1="210" x2="500" y2="210" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="210" x2="500" y2="224" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="224" x2="512" y2="224" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="229" x2="508" y2="229" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="234" x2="504" y2="234" stroke="#333" stroke-width="2"/>
+  <text x="518" y="214" font-size="10" fill="#0000cc" font-weight="bold">BTN 3</text>
+  <text x="565" y="214" font-size="10" fill="#555">Toggle Blue</text>
+
+  <!-- ── Button 4 (D5, y=255): Increment Red ── -->
+  <line x1="400" y1="255" x2="430" y2="255" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="255" r="3" fill="#333"/>
+  <line x1="432" y1="255" x2="464" y2="241" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="255" r="3" fill="#333"/>
+  <line x1="468" y1="255" x2="500" y2="255" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="255" x2="500" y2="269" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="269" x2="512" y2="269" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="274" x2="508" y2="274" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="279" x2="504" y2="279" stroke="#333" stroke-width="2"/>
+  <text x="518" y="259" font-size="10" fill="#cc0000" font-weight="bold">BTN 4</text>
+  <text x="565" y="259" font-size="10" fill="#555">Increment Red</text>
+
+  <!-- ── Button 5 (D6, y=300): Increment Green ── -->
+  <line x1="400" y1="300" x2="430" y2="300" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="300" r="3" fill="#333"/>
+  <line x1="432" y1="300" x2="464" y2="286" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="300" r="3" fill="#333"/>
+  <line x1="468" y1="300" x2="500" y2="300" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="300" x2="500" y2="314" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="314" x2="512" y2="314" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="319" x2="508" y2="319" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="324" x2="504" y2="324" stroke="#333" stroke-width="2"/>
+  <text x="518" y="304" font-size="10" fill="#007700" font-weight="bold">BTN 5</text>
+  <text x="565" y="304" font-size="10" fill="#555">Increment Green</text>
+
+  <!-- ── Button 6 (D7, y=345): Increment Blue ── -->
+  <line x1="400" y1="345" x2="430" y2="345" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="345" r="3" fill="#333"/>
+  <line x1="432" y1="345" x2="464" y2="331" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="345" r="3" fill="#333"/>
+  <line x1="468" y1="345" x2="500" y2="345" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="345" x2="500" y2="359" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="359" x2="512" y2="359" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="364" x2="508" y2="364" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="369" x2="504" y2="369" stroke="#333" stroke-width="2"/>
+  <text x="518" y="349" font-size="10" fill="#0000cc" font-weight="bold">BTN 6</text>
+  <text x="565" y="349" font-size="10" fill="#555">Increment Blue</text>
+
+  <!-- ── Button 7 (D8, y=390): Master Toggle ── -->
+  <line x1="400" y1="390" x2="430" y2="390" stroke="#333" stroke-width="1.5"/>
+  <circle cx="432" cy="390" r="3" fill="#333"/>
+  <line x1="432" y1="390" x2="464" y2="376" stroke="#333" stroke-width="1.5"/>
+  <circle cx="468" cy="390" r="3" fill="#333"/>
+  <line x1="468" y1="390" x2="500" y2="390" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="390" x2="500" y2="404" stroke="#333" stroke-width="1.5"/>
+  <line x1="488" y1="404" x2="512" y2="404" stroke="#333" stroke-width="2"/>
+  <line x1="492" y1="409" x2="508" y2="409" stroke="#333" stroke-width="2"/>
+  <line x1="496" y1="414" x2="504" y2="414" stroke="#333" stroke-width="2"/>
+  <text x="518" y="394" font-size="10" fill="#555" font-weight="bold">BTN 7</text>
+  <text x="565" y="394" font-size="10" fill="#555">Master Toggle (random colour on)</text>
+
+  <!-- Pull-up annotation -->
+  <text x="404" y="490" font-size="8" fill="#888" font-style="italic">Internal pull-up enabled on all button pins</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       D9 → LED STRIP DATA PATH
+       Route: (375,435) right to (580,435), down to (580,570)
+       Resistor at y=570..598, wire to strip DIN at (580,620)
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- D9 horizontal wire -->
+  <line x1="400" y1="435" x2="580" y2="435" stroke="#ffe066" stroke-width="2"/>
+  <!-- D9 label -->
+  <text x="490" y="428" text-anchor="middle" font-size="9" fill="#ffe066">D9 data line</text>
+
+  <!-- D9 turn-down at x=580 -->
+  <line x1="580" y1="435" x2="580" y2="570" stroke="#ffe066" stroke-width="2"/>
+
+  <!-- Resistor (470Ω) — European box style, vertical -->
+  <!-- entry wire already ends at (580,570) -->
+  <rect x="567" y="570" width="26" height="28" fill="white" stroke="#333" stroke-width="1.5" rx="2"/>
+  <text x="580" y="582" text-anchor="middle" font-size="8" fill="#222">470</text>
+  <text x="580" y="592" text-anchor="middle" font-size="8" fill="#222">Ω</text>
+  <line x1="580" y1="598" x2="580" y2="622" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Resistor label to the right -->
+  <text x="598" y="587" font-size="9" fill="#555">470Ω resistor</text>
+  <text x="598" y="598" font-size="9" fill="#555">(data protection)</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LED STRIP
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- Power buses -->
+  <!-- +5V bus at y=615, x=95..880 -->
+  <line x1="95" y1="615" x2="880" y2="615" stroke="#cc2222" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="88" y="619" text-anchor="end" font-size="9" fill="#cc2222" font-weight="bold">+5V</text>
+
+  <!-- GND bus at y=740, x=95..880 -->
+  <line x1="95" y1="740" x2="880" y2="740" stroke="#333" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="88" y="744" text-anchor="end" font-size="9" fill="#333" font-weight="bold">GND</text>
+
+  <!-- +5V bus connection from Arduino left pin -->
+  <line x1="180" y1="120" x2="140" y2="120" stroke="#cc2222" stroke-width="1.5"/>
+  <line x1="140" y1="120" x2="140" y2="615" stroke="#cc2222" stroke-width="1.5"/>
+  <!-- Junction dot -->
+  <circle cx="140" cy="615" r="4" fill="#cc2222"/>
+
+  <!-- GND bus connection from Arduino left pin -->
+  <line x1="180" y1="165" x2="155" y2="165" stroke="#333" stroke-width="1.5"/>
+  <line x1="155" y1="165" x2="155" y2="740" stroke="#333" stroke-width="1.5"/>
+  <!-- Junction dot -->
+  <circle cx="155" cy="740" r="4" fill="#333"/>
+
+  <!-- Decoupling capacitor between +5V and GND buses (near power entry to strip) -->
+  <!-- at x=240, runs between y=615 and y=740 -->
+  <line x1="240" y1="615" x2="240" y2="658" stroke="#cc2222" stroke-width="1.5"/>
+  <!-- Cap plate + -->
+  <line x1="222" y1="658" x2="258" y2="658" stroke="#cc2222" stroke-width="3"/>
+  <text x="263" y="663" font-size="9" fill="#cc2222">+</text>
+  <!-- Gap -->
+  <line x1="222" y1="667" x2="258" y2="667" stroke="#333" stroke-width="3"/>
+  <!-- Cap plate - -->
+  <line x1="240" y1="667" x2="240" y2="740" stroke="#333" stroke-width="1.5"/>
+  <!-- Cap label -->
+  <text x="265" y="670" font-size="9" fill="#555">1000µF</text>
+  <text x="265" y="681" font-size="9" fill="#555">decoupling cap</text>
+  <!-- Junction dots on buses -->
+  <circle cx="240" cy="615" r="3.5" fill="#cc2222"/>
+  <circle cx="240" cy="740" r="3.5" fill="#333"/>
+
+  <!-- LED strip body -->
+  <rect x="300" y="628" width="560" height="70" rx="6" fill="#12123a" stroke="#4444aa" stroke-width="2"/>
+  <text x="580" y="650" text-anchor="middle" font-size="12" font-weight="bold" fill="white">LED STRIP</text>
+  <text x="580" y="666" text-anchor="middle" font-size="9"  fill="#aaaadd">NeoPixel / WS2812B  (NUM_PIXELS = 30)</text>
+
+  <!-- Decorative coloured LED dots on strip -->
+  <circle cx="320" cy="681" r="7" fill="#ff3333" opacity="0.85"/>
+  <circle cx="338" cy="681" r="7" fill="#ff8800" opacity="0.85"/>
+  <circle cx="356" cy="681" r="7" fill="#ffff22" opacity="0.85"/>
+  <circle cx="374" cy="681" r="7" fill="#22ff22" opacity="0.85"/>
+  <circle cx="392" cy="681" r="7" fill="#22ffff" opacity="0.85"/>
+  <circle cx="410" cy="681" r="7" fill="#2222ff" opacity="0.85"/>
+  <circle cx="428" cy="681" r="7" fill="#cc22ff" opacity="0.85"/>
+  <circle cx="446" cy="681" r="7" fill="#ff22cc" opacity="0.85"/>
+  <circle cx="464" cy="681" r="7" fill="#ffffff" opacity="0.7"/>
+  <text x="482" y="686" font-size="9" fill="#777">· · ·</text>
+
+  <!-- Strip connection labels at top edge -->
+  <text x="340" y="626" text-anchor="middle" font-size="8" fill="#cc2222">VCC</text>
+  <text x="580" y="626" text-anchor="middle" font-size="8" fill="#ffe066">DIN</text>
+  <text x="830" y="626" text-anchor="middle" font-size="8" fill="#999">GND</text>
+
+  <!-- Strip VCC wire from +5V bus -->
+  <line x1="340" y1="615" x2="340" y2="628" stroke="#cc2222" stroke-width="2"/>
+  <circle cx="340" cy="615" r="3.5" fill="#cc2222"/>
+
+  <!-- Strip DIN wire from resistor (580,622) to strip top (580,628) -->
+  <line x1="580" y1="622" x2="580" y2="628" stroke="#ffe066" stroke-width="2"/>
+  <circle cx="580" cy="628" r="3.5" fill="#ffe066"/>
+
+  <!-- Strip GND wire to GND bus -->
+  <line x1="830" y1="698" x2="830" y2="740" stroke="#333" stroke-width="2"/>
+  <circle cx="830" cy="740" r="3.5" fill="#333"/>
+
+  <!-- "External 5V supply" annotation -->
+  <text x="140" y="597" text-anchor="middle" font-size="8" fill="#cc2222" font-style="italic">5V (ext. supply</text>
+  <text x="140" y="607" text-anchor="middle" font-size="8" fill="#cc2222" font-style="italic">or board 5V pin)</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SYMBOL LEGEND (bottom-left)
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="20" y="622" width="205" height="155" rx="5" fill="white" stroke="#ccc" stroke-width="1"/>
+  <text x="122" y="639" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Symbols &amp; Notes</text>
+  <!-- Switch symbol example -->
+  <line x1="32"  y1="656" x2="50"  y2="656" stroke="#333" stroke-width="1.5"/>
+  <circle cx="52" cy="656" r="2.5" fill="#333"/>
+  <line x1="52"  y1="656" x2="72"  y2="645" stroke="#333" stroke-width="1.5"/>
+  <circle cx="76" cy="656" r="2.5" fill="#333"/>
+  <line x1="76"  y1="656" x2="94"  y2="656" stroke="#333" stroke-width="1.5"/>
+  <text x="98" y="660" font-size="9" fill="#555">= N/O pushbutton</text>
+  <!-- GND symbol example -->
+  <line x1="42"  y1="672" x2="42"  y2="682" stroke="#333" stroke-width="1.5"/>
+  <line x1="32"  y1="682" x2="52"  y2="682" stroke="#333" stroke-width="1.8"/>
+  <line x1="35"  y1="686" x2="49"  y2="686" stroke="#333" stroke-width="1.8"/>
+  <line x1="38"  y1="690" x2="46"  y2="690" stroke="#333" stroke-width="1.8"/>
+  <text x="58" y="687" font-size="9" fill="#555">= Ground (0V ref)</text>
+  <!-- Cap symbol example -->
+  <line x1="42"  y1="698" x2="42"  y2="706" stroke="#cc2222" stroke-width="1.5"/>
+  <line x1="33"  y1="706" x2="51"  y2="706" stroke="#cc2222" stroke-width="2.5"/>
+  <line x1="33"  y1="711" x2="51"  y2="711" stroke="#333"   stroke-width="2.5"/>
+  <line x1="42"  y1="711" x2="42"  y2="719" stroke="#333"   stroke-width="1.5"/>
+  <text x="58"  y="712" font-size="9" fill="#555">= Capacitor</text>
+  <!-- Resistor symbol example -->
+  <rect x="33" y="726" width="18" height="10" fill="white" stroke="#333" stroke-width="1.2" rx="1"/>
+  <text x="55" y="735" font-size="9" fill="#555">= Resistor</text>
+  <!-- Notes -->
+  <text x="30" y="752" font-size="8" fill="#777">All buttons: one leg to pin, one leg to GND</text>
+  <text x="30" y="763" font-size="8" fill="#777">Adjust pins, brightness, NUM_PIXELS in code.py</text>
+
+</svg>
