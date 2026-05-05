@@ -1,29 +1,53 @@
-# CircuitPython RGB LED Strip Controller
+# Arduino RGB LED Strip Controller
 
-Controls an addressable RGB LED strip (NeoPixel/WS2812B) via 7 buttons on a CircuitPython-compatible Arduino board.
+Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and three N-channel MOSFETs. Written as a standard Arduino sketch — works on any Arduino board (Uno, Nano, Mega, etc.).
 
 ## Hardware Requirements
 
-- CircuitPython-compatible Arduino board (e.g. Arduino Nano RP2040 Connect, Nano 33 BLE, Nano ESP32)
-- WS2812B / NeoPixel compatible RGB LED strip
-- 7 momentary push buttons
-- 470Ω resistor in series with the LED data line (recommended)
-- Decoupling capacitor (1000µF) across LED strip power rails (recommended)
+- Any Arduino board with PWM on D9, D10, D11 (Uno, Nano, Mega, etc.)
+- 24V non-addressable RGB LED strip (common-cathode / shared GND)
+- 24V power supply
+- Buck converter module (24V → 5V, e.g. LM2596) to power the Arduino
+- 3× N-channel MOSFET — IRLZ44N recommended (logic-level, 55V 47A TO-220)
+- 3× 100Ω resistor (gate series resistors)
+- 3× 10kΩ resistor (gate pull-down resistors)
+- 7× momentary push buttons
 
 ## Wiring
 
-| Button | Pin  | Function              |
-|--------|------|-----------------------|
-| 1      | D2   | Toggle red channel    |
-| 2      | D3   | Toggle green channel  |
-| 3      | D4   | Toggle blue channel   |
-| 4      | D5   | Increment red value   |
-| 5      | D6   | Increment green value |
-| 6      | D7   | Increment blue value  |
-| 7      | D8   | Master toggle (on/off)|
+See `circuit_diagram.svg` for the full schematic.
 
-- LED strip data line → D9 (via 470Ω resistor)
-- Buttons wired between pin and GND (internal pull-up enabled)
+### Buttons (D2–D8)
+
+| Button | Pin | Function              |
+|--------|-----|-----------------------|
+| 1      | D2  | Toggle red channel    |
+| 2      | D3  | Toggle green channel  |
+| 3      | D4  | Toggle blue channel   |
+| 4      | D5  | Increment red value   |
+| 5      | D6  | Increment green value |
+| 6      | D7  | Increment blue value  |
+| 7      | D8  | Master toggle (on/off)|
+
+All buttons wire between the pin and GND — internal pull-ups are enabled in software.
+
+### MOSFET outputs (D9–D11)
+
+| Pin | Channel | MOSFET |
+|-----|---------|--------|
+| D9  | Red     | IRLZ44N — drain to strip R−, source to GND |
+| D10 | Green   | IRLZ44N — drain to strip G−, source to GND |
+| D11 | Blue    | IRLZ44N — drain to strip B−, source to GND |
+
+Each gate: Arduino pin → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
+
+### Power
+
+- 24V PSU → LED strip +24V rail
+- 24V PSU → Buck converter IN+ → Buck converter OUT+ → Arduino 5V pin
+- All GNDs (PSU −ve, buck GND, Arduino GND, MOSFET sources) share one bus
+
+> **Important:** Set the buck converter output to exactly 5.0V before connecting it to the Arduino. Connect to the 5V pin, not VIN.
 
 ## Button Behaviour
 
@@ -32,34 +56,29 @@ Controls an addressable RGB LED strip (NeoPixel/WS2812B) via 7 buttons on a Circ
 | 1 | Toggles red channel on/off |
 | 2 | Toggles green channel on/off |
 | 3 | Toggles blue channel on/off |
-| 4 | Increments red brightness by one step (wraps 0→255) and enables red channel |
-| 5 | Increments green brightness by one step (wraps 0→255) and enables green channel |
-| 6 | Increments blue brightness by one step (wraps 0→255) and enables blue channel |
-| 7 | Master power toggle — turning ON picks a random colour; turning OFF blanks all LEDs |
+| 4 | Increments red brightness by one step (8 steps, wraps around) and enables red |
+| 5 | Increments green brightness by one step and enables green |
+| 6 | Increments blue brightness by one step and enables blue |
+| 7 | Master power toggle — turning ON picks a random colour; OFF blanks all LEDs |
 
 ## Configuration
 
-Edit the constants at the top of `code.py`:
+Edit the constants at the top of `rgb_led_controller/rgb_led_controller.ino`:
 
-| Constant | Default | Description |
-|----------|---------|-------------|
-| `BUTTON_PINS` | D2–D8 | GPIO pins for each button |
-| `LED_PIN` | D9 | GPIO pin for LED strip data |
-| `NUM_PIXELS` | 30 | Number of LEDs in the strip |
-| `INCREMENT_STEP` | 32 | Brightness increment per button press (1–255) |
-| `DEBOUNCE_MS` | 50 | Button debounce time in milliseconds |
-
-## Dependencies
-
-Install via [CircuitPython Library Bundle](https://circuitpython.org/libraries):
-
-- `neopixel` (`adafruit_neopixel` / `neopixel.mpy`)
-
-Copy `neopixel.mpy` to the `lib/` folder on your board's `CIRCUITPY` drive.
+| Constant        | Default | Description                                      |
+|-----------------|---------|--------------------------------------------------|
+| `BUTTON_PINS`   | D2–D8   | Digital pins for each button                     |
+| `R_PIN`         | D9      | PWM output for red MOSFET gate                   |
+| `G_PIN`         | D10     | PWM output for green MOSFET gate                 |
+| `B_PIN`         | D11     | PWM output for blue MOSFET gate                  |
+| `INCREMENT_STEP`| 32      | Brightness step per press (0–255, 8 steps = 32)  |
+| `DEBOUNCE_MS`   | 50      | Button debounce window in milliseconds           |
 
 ## Installation
 
-1. Install CircuitPython on your Arduino board (see [circuitpython.org](https://circuitpython.org/downloads))
-2. Copy `neopixel.mpy` to `CIRCUITPY/lib/`
-3. Copy `code.py` to the root of the `CIRCUITPY` drive
-4. The board will restart and run automatically
+1. Open `rgb_led_controller/rgb_led_controller.ino` in the Arduino IDE
+2. Select your board under **Tools → Board**
+3. Select the correct port under **Tools → Port**
+4. Click **Upload**
+
+No external libraries required.
