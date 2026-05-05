@@ -1,10 +1,10 @@
-# Arduino RGB LED Strip Controller
+# ESP32 RGB LED Strip Controller
 
-Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and three N-channel MOSFETs. Written as a standard Arduino sketch — works on any Arduino board (Uno, Nano, Mega, etc.).
+Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and three N-channel MOSFETs. Written as an Arduino sketch targeting the ESP32.
 
 ## Hardware Requirements
 
-- Any Arduino board with PWM on D9, D10, D11 (Uno, Nano, Mega, etc.)
+- ESP32 development board (e.g. ESP32-WROOM-32 DevKit)
 - 24V non-addressable RGB LED strip (common-cathode / shared GND)
 - 24V power supply
 - Buck converter module (24V → 5V, e.g. LM2596) to power the Arduino
@@ -17,29 +17,29 @@ Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and th
 
 See `circuit_diagram.svg` for the full schematic.
 
-### Buttons (D2–D8)
+### Buttons (GPIO 4, 5, 16–19, 21)
 
-| Button | Pin | Function              |
-|--------|-----|-----------------------|
-| 1      | D2  | Toggle red channel    |
-| 2      | D3  | Toggle green channel  |
-| 3      | D4  | Toggle blue channel   |
-| 4      | D5  | Increment red value   |
-| 5      | D6  | Increment green value |
-| 6      | D7  | Increment blue value  |
-| 7      | D8  | Master toggle (on/off)|
+| Button | GPIO | Function              |
+|--------|------|-----------------------|
+| 1      | 4    | Toggle red channel    |
+| 2      | 5    | Toggle green channel  |
+| 3      | 16   | Toggle blue channel   |
+| 4      | 17   | Increment red value   |
+| 5      | 18   | Increment green value |
+| 6      | 19   | Increment blue value  |
+| 7      | 21   | Master toggle (on/off)|
 
 All buttons wire between the pin and GND — internal pull-ups are enabled in software.
 
-### MOSFET outputs (D9–D11)
+### MOSFET outputs (GPIO 25, 26, 27)
 
-| Pin | Channel | MOSFET |
-|-----|---------|--------|
-| D9  | Red     | IRLZ44N — drain to strip R−, source to GND |
-| D10 | Green   | IRLZ44N — drain to strip G−, source to GND |
-| D11 | Blue    | IRLZ44N — drain to strip B−, source to GND |
+| GPIO | Channel | MOSFET |
+|------|---------|--------|
+| 25   | Red     | IRLZ44N — drain to strip R−, source to GND |
+| 26   | Green   | IRLZ44N — drain to strip G−, source to GND |
+| 27   | Blue    | IRLZ44N — drain to strip B−, source to GND |
 
-Each gate: Arduino pin → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
+Each gate: ESP32 GPIO → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
 
 ### Power
 
@@ -65,20 +65,42 @@ Each gate: Arduino pin → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
 
 Edit the constants at the top of `rgb_led_controller/rgb_led_controller.ino`:
 
-| Constant        | Default | Description                                      |
-|-----------------|---------|--------------------------------------------------|
-| `BUTTON_PINS`   | D2–D8   | Digital pins for each button                     |
-| `R_PIN`         | D9      | PWM output for red MOSFET gate                   |
-| `G_PIN`         | D10     | PWM output for green MOSFET gate                 |
-| `B_PIN`         | D11     | PWM output for blue MOSFET gate                  |
-| `INCREMENT_STEP`| 32      | Brightness step per press (0–255, 8 steps = 32)  |
-| `DEBOUNCE_MS`   | 50      | Button debounce window in milliseconds           |
+| Constant        | Default        | Description                                      |
+|-----------------|----------------|--------------------------------------------------|
+| `BUTTON_PINS`   | 4,5,16–19,21   | GPIO pins for each button                        |
+| `R_PIN`         | 25             | PWM output for red MOSFET gate                   |
+| `G_PIN`         | 26             | PWM output for green MOSFET gate                 |
+| `B_PIN`         | 27             | PWM output for blue MOSFET gate                  |
+| `PWM_FREQ`      | 1000           | PWM frequency in Hz (raise to 5000+ for cameras) |
+| `INCREMENT_STEP`| 32             | Brightness step per press (8 steps across 0–255) |
+| `DEBOUNCE_MS`   | 50             | Button debounce window in milliseconds           |
 
 ## Installation
 
+### 1. Add ESP32 board support to Arduino IDE
+
+In Arduino IDE: **File → Preferences → Additional boards manager URLs**, add:
+
+```
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+```
+
+Then **Tools → Board → Boards Manager**, search for `esp32` by Espressif, and install version **3.x**.
+
+### 2. Linux USB permissions
+
+```bash
+sudo usermod -a -G dialout $USER
+newgrp dialout
+```
+
+ESP32 boards typically appear as `/dev/ttyUSB0` (CH340 chip) or `/dev/ttyACM0` (CP210x chip).
+
+### 3. Upload
+
 1. Open `rgb_led_controller/rgb_led_controller.ino` in the Arduino IDE
-2. Select your board under **Tools → Board**
-3. Select the correct port under **Tools → Port**
+2. **Tools → Board → ESP32 Arduino** → select your specific board (e.g. *ESP32 Dev Module*)
+3. **Tools → Port** → select `/dev/ttyUSB0` or `/dev/ttyACM0`
 4. Click **Upload**
 
 No external libraries required.

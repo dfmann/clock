@@ -1,11 +1,17 @@
-// Pin assignments — all match the circuit diagram
-const uint8_t BUTTON_PINS[7] = {2, 3, 4, 5, 6, 7, 8};
-const uint8_t R_PIN = 9;   // PWM → 100Ω → MOSFET gate (red channel)
-const uint8_t G_PIN = 10;  // PWM → 100Ω → MOSFET gate (green channel)
-const uint8_t B_PIN = 11;  // PWM → 100Ω → MOSFET gate (blue channel)
+// ESP32 RGB LED Strip Controller
+// Requires ESP32 Arduino core v3.x
+// Boards Manager URL: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
 
+// --- Pin configuration (GPIO numbers) ---
+const uint8_t BUTTON_PINS[7] = {4, 5, 16, 17, 18, 19, 21};
+const uint8_t R_PIN = 25;   // PWM → 100Ω → MOSFET gate (red channel)
+const uint8_t G_PIN = 26;   // PWM → 100Ω → MOSFET gate (green channel)
+const uint8_t B_PIN = 27;   // PWM → 100Ω → MOSFET gate (blue channel)
+
+const uint32_t PWM_FREQ      = 1000;  // Hz — raise to 5000+ if camera flicker is an issue
+const uint8_t  PWM_BITS      = 8;     // 8-bit resolution: duty cycle 0–255
 const uint8_t  INCREMENT_STEP = 32;   // 8 steps across 0–255
-const uint32_t DEBOUNCE_MS    = 50;
+const uint32_t DEBOUNCE_MS   = 50;
 
 bool    powerOn = false;
 bool    rActive = true, gActive = true, bActive = true;
@@ -15,9 +21,9 @@ bool     prevStates[7];
 uint32_t debounceTimes[7];
 
 void refresh() {
-    analogWrite(R_PIN, (powerOn && rActive) ? rVal : 0);
-    analogWrite(G_PIN, (powerOn && gActive) ? gVal : 0);
-    analogWrite(B_PIN, (powerOn && bActive) ? bVal : 0);
+    ledcWrite(R_PIN, (powerOn && rActive) ? rVal : 0);
+    ledcWrite(G_PIN, (powerOn && gActive) ? gVal : 0);
+    ledcWrite(B_PIN, (powerOn && bActive) ? bVal : 0);
 }
 
 void handleButton(uint8_t index) {
@@ -42,8 +48,7 @@ void handleButton(uint8_t index) {
 }
 
 void setup() {
-    // Seed RNG from a floating analog pin before any reads
-    randomSeed(analogRead(A0));
+    randomSeed(esp_random());  // ESP32 hardware RNG — better entropy than analogRead
 
     for (uint8_t i = 0; i < 7; i++) {
         pinMode(BUTTON_PINS[i], INPUT_PULLUP);
@@ -51,9 +56,10 @@ void setup() {
         debounceTimes[i] = 0;
     }
 
-    pinMode(R_PIN, OUTPUT);
-    pinMode(G_PIN, OUTPUT);
-    pinMode(B_PIN, OUTPUT);
+    // LEDC is the ESP32 PWM peripheral — ledcAttach replaces pinMode+analogWrite
+    ledcAttach(R_PIN, PWM_FREQ, PWM_BITS);
+    ledcAttach(G_PIN, PWM_FREQ, PWM_BITS);
+    ledcAttach(B_PIN, PWM_FREQ, PWM_BITS);
 
     refresh();
 }
