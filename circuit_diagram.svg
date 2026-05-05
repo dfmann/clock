@@ -7,7 +7,7 @@
 
   <!-- Title -->
   <text x="500" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#111">
-    CircuitPython RGB LED Controller — 24V Circuit Diagram
+    ESP8266 RGB LED Strip Controller — 24V Circuit Diagram
   </text>
   <line x1="20" y1="37" x2="980" y2="37" stroke="#bbb" stroke-width="1"/>
 
@@ -64,9 +64,9 @@
        ═══════════════════════════════════════════════════ -->
   <rect x="490" y="118" width="78" height="90" rx="4" fill="#fff8e1" stroke="#cc7700" stroke-width="1.8"/>
   <text x="529" y="135" text-anchor="middle" font-size="8"  fill="#884400" font-weight="bold">BUCK CONV</text>
-  <text x="529" y="148" text-anchor="middle" font-size="8"  fill="#884400">24V → 5V</text>
+  <text x="529" y="148" text-anchor="middle" font-size="8"  fill="#884400">24V → 3.3V</text>
   <text x="529" y="161" text-anchor="middle" font-size="7"  fill="#aa6600">e.g. LM2596</text>
-  <text x="529" y="172" text-anchor="middle" font-size="7"  fill="#aa6600">set output to 5V</text>
+  <text x="529" y="172" text-anchor="middle" font-size="7"  fill="#aa6600">set output to 3.3V</text>
   <text x="529" y="183" text-anchor="middle" font-size="7"  fill="#aa6600">≥500mA rated</text>
   <!-- IN+ label -->
   <text x="494" y="127" font-size="7" fill="#999">IN+</text>
@@ -75,7 +75,7 @@
   <!-- GND label -->
   <text x="494" y="205" font-size="7" fill="#999">GND</text>
 
-  <!-- OUT+ wire: (568,150) → (572,150) → Arduino 5V stub -->
+  <!-- OUT+ wire: (568,150) → (572,150) → ESP8266 3.3V stub -->
   <line x1="568" y1="150" x2="590" y2="150" stroke="#cc2222" stroke-width="2"/>
   <!-- Junction at Arduino 5V stub -->
   <circle cx="572" cy="150" r="3.5" fill="#cc2222"/>
@@ -151,7 +151,7 @@
   <text x="107" y="376" text-anchor="middle" font-size="7" fill="#222">10k</text>
   <text x="107" y="386" text-anchor="middle" font-size="7" fill="#222">Ω</text>
   <line x1="107" y1="393" x2="107" y2="490" stroke="#333" stroke-width="1.5"/>
-  <text x="107" y="208" text-anchor="middle" font-size="8" fill="#ff6666">D9 (R)</text>
+  <text x="107" y="208" text-anchor="middle" font-size="8" fill="#ff6666">D6/GPIO12 (R)</text>
 
   <!-- ── Green gate  D10 (y=260) → junction (248,305) ── -->
   <line x1="572" y1="260" x2="248" y2="260" stroke="#66cc66" stroke-width="1.5"/>
@@ -168,7 +168,7 @@
   <text x="248" y="376" text-anchor="middle" font-size="7" fill="#222">10k</text>
   <text x="248" y="386" text-anchor="middle" font-size="7" fill="#222">Ω</text>
   <line x1="248" y1="393" x2="248" y2="490" stroke="#333" stroke-width="1.5"/>
-  <text x="248" y="253" text-anchor="middle" font-size="8" fill="#66cc66">D10 (G)</text>
+  <text x="248" y="253" text-anchor="middle" font-size="8" fill="#66cc66">D7/GPIO13 (G)</text>
 
   <!-- ── Blue gate  D11 (y=295) → junction (388,305) ──
        D11 horizontal at y=295 crosses G down-wire at x=248 (y=260→305)
@@ -192,7 +192,7 @@
   <text x="388" y="376" text-anchor="middle" font-size="7" fill="#222">10k</text>
   <text x="388" y="386" text-anchor="middle" font-size="7" fill="#222">Ω</text>
   <line x1="388" y1="393" x2="388" y2="490" stroke="#333" stroke-width="1.5"/>
-  <text x="388" y="288" text-anchor="middle" font-size="8" fill="#6699ff">D11 (B)</text>
+  <text x="388" y="288" text-anchor="middle" font-size="8" fill="#6699ff">D5/GPIO14 (B)</text>
 
   <!-- ═══════════════════════════════════════════════════
        GND BUS  (shared: 24V PSU −ve, MOSFET sources, Arduino GND, buck GND)
@@ -220,17 +220,17 @@
        rect(590, 58, 165, 480)  x:590..755, y:58..538
        ═══════════════════════════════════════════════════ -->
   <rect x="590" y="58" width="165" height="480" rx="8" fill="#1a5c2e" stroke="#0b3318" stroke-width="2.5"/>
-  <text x="672" y="80"  text-anchor="middle" font-size="12" font-weight="bold" fill="white">ARDUINO</text>
-  <text x="672" y="96"  text-anchor="middle" font-size="9"  fill="#a8e6b8">CircuitPython Board</text>
+  <text x="672" y="80"  text-anchor="middle" font-size="12" font-weight="bold" fill="white">ESP8266</text>
+  <text x="672" y="96"  text-anchor="middle" font-size="9"  fill="#a8e6b8">NodeMCU / D1 Mini</text>
   <rect x="632" y="523" width="80" height="12" rx="3" fill="#444" stroke="#222" stroke-width="1"/>
   <text x="672" y="533" text-anchor="middle" font-size="8" fill="white">USB (optional)</text>
 
   <!-- LEFT side pin labels (inside board) -->
-  <text x="602" y="154" font-size="9" fill="#ffaaaa">+5V</text>
+  <text x="602" y="154" font-size="9" fill="#ffaaaa">3.3V</text>
   <text x="602" y="180" font-size="9" fill="#aaaaff">GND</text>
-  <text x="602" y="220" font-size="9" fill="#ff9999">D9</text>
-  <text x="602" y="265" font-size="9" fill="#99cc99">D10</text>
-  <text x="602" y="300" font-size="9" fill="#9999ee">D11</text>
+  <text x="602" y="220" font-size="9" fill="#ff9999">D6/12</text>
+  <text x="602" y="265" font-size="9" fill="#99cc99">D7/13</text>
+  <text x="602" y="300" font-size="9" fill="#9999ee">D5/14</text>
 
   <!-- LEFT side pin stubs (x=590 → x=572) -->
   <!-- +5V: y=150 (connects to buck OUT+) -->
@@ -248,14 +248,14 @@
   <line x1="572" y1="175" x2="556" y2="175" stroke="#444" stroke-width="1.5"/>
   <line x1="556" y1="175" x2="556" y2="490" stroke="#444" stroke-width="1.5"/>
 
-  <!-- RIGHT side labels (D2–D8) -->
-  <text x="742" y="124" text-anchor="end" font-size="9" fill="#ccffcc">D2</text>
-  <text x="742" y="166" text-anchor="end" font-size="9" fill="#ccffcc">D3</text>
-  <text x="742" y="208" text-anchor="end" font-size="9" fill="#ccffcc">D4</text>
-  <text x="742" y="250" text-anchor="end" font-size="9" fill="#ccffcc">D5</text>
-  <text x="742" y="292" text-anchor="end" font-size="9" fill="#ccffcc">D6</text>
-  <text x="742" y="334" text-anchor="end" font-size="9" fill="#ccffcc">D7</text>
-  <text x="742" y="376" text-anchor="end" font-size="9" fill="#ccffcc">D8</text>
+  <!-- RIGHT side labels (GPIO/D-pin for ESP8266) -->
+  <text x="742" y="124" text-anchor="end" font-size="9" fill="#ccffcc">D1/5</text>
+  <text x="742" y="166" text-anchor="end" font-size="9" fill="#ccffcc">D2/4</text>
+  <text x="742" y="208" text-anchor="end" font-size="9" fill="#ccffcc">D3/0</text>
+  <text x="742" y="250" text-anchor="end" font-size="9" fill="#ccffcc">D4/2</text>
+  <text x="742" y="292" text-anchor="end" font-size="9" fill="#ccffcc">RX/3</text>
+  <text x="742" y="334" text-anchor="end" font-size="9" fill="#ccffcc">TX/1</text>
+  <text x="742" y="376" text-anchor="end" font-size="9" fill="#ccffcc">D0/16</text>
 
   <!-- RIGHT side pin stubs -->
   <line x1="755" y1="120" x2="773" y2="120" stroke="#b8a050" stroke-width="2"/>
@@ -362,7 +362,8 @@
   <text x="876" y="376" font-size="10" fill="#555" font-weight="bold">BTN 7</text>
   <text x="924" y="376" font-size="10" fill="#555">Master Toggle</text>
 
-  <text x="775" y="432" font-size="8" fill="#888" font-style="italic">Internal pull-up enabled — buttons wire pin → GND</text>
+  <text x="775" y="415" font-size="8" fill="#888" font-style="italic">BTN 1–6: internal pull-up, wire pin → GND</text>
+  <text x="775" y="427" font-size="8" fill="#cc7700" font-style="italic">BTN 7 (GPIO16): external 10kΩ to 3.3V required (no internal pull-up)</text>
 
   <!-- ═══════════════════════════════════════════════════
        NOTES / LEGEND  (bottom)
@@ -371,10 +372,10 @@
   <text x="295" y="534" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">Notes &amp; Component Values</text>
 
   <!-- Left column -->
-  <text x="42" y="552" font-size="9" fill="#884400" font-weight="bold">Buck converter (24V → 5V):</text>
-  <text x="42" y="565" font-size="9" fill="#555">  Any LM2596 module; adjust trimmer to 5.0V before connecting</text>
-  <text x="42" y="578" font-size="9" fill="#555">  Rated ≥500mA (Arduino draws &lt;200mA typically)</text>
-  <text x="42" y="591" font-size="9" fill="#555">  Connect OUT+ to Arduino 5V pin (not VIN — bypasses regulator)</text>
+  <text x="42" y="552" font-size="9" fill="#884400" font-weight="bold">Buck converter (24V → 3.3V):</text>
+  <text x="42" y="565" font-size="9" fill="#555">  Any LM2596 module; adjust trimmer to 3.3V before connecting</text>
+  <text x="42" y="578" font-size="9" fill="#555">  Rated ≥500mA (ESP8266 draws &lt;200mA typically)</text>
+  <text x="42" y="591" font-size="9" fill="#555">  Connect OUT+ to ESP8266 3.3V pin — do NOT use 5V</text>
 
   <text x="42" y="610" font-size="9" fill="#333" font-weight="bold">MOSFET (×3):  IRLZ44N</text>
   <text x="42" y="623" font-size="9" fill="#555">  N-ch logic-level, 55V 47A TO-220 — fully on at 3.3V gate</text>
@@ -384,13 +385,13 @@
   <text x="42" y="668" font-size="9" fill="#555">  Limits inrush / suppresses ringing on gate wire</text>
 
   <text x="42" y="687" font-size="9" fill="#333" font-weight="bold">Pull-down resistor (×3):  10kΩ</text>
-  <text x="42" y="700" font-size="9" fill="#555">  Holds gate LOW during Arduino boot — prevents flicker</text>
+  <text x="42" y="700" font-size="9" fill="#555">  Holds gate LOW during ESP8266 boot — prevents flicker</text>
 
-  <text x="42" y="719" font-size="9" fill="#333" font-weight="bold">Shared GND:</text>
-  <text x="42" y="732" font-size="9" fill="#555">  24V PSU −ve, buck GND, Arduino GND, all MOSFET sources</text>
-  <text x="42" y="745" font-size="9" fill="#555">  must all share the same GND bus</text>
+  <text x="42" y="719" font-size="9" fill="#333" font-weight="bold">GPIO16 (BTN7) — no internal pull-up:</text>
+  <text x="42" y="732" font-size="9" fill="#555">  Wire external 10kΩ from GPIO16 to 3.3V; button to GND</text>
 
-  <text x="42" y="762" font-size="9" fill="#333" font-weight="bold">PWM:  1000 Hz (D9/D10/D11) — increase if camera flicker seen</text>
+  <text x="42" y="749" font-size="9" fill="#333" font-weight="bold">Shared GND:</text>
+  <text x="42" y="762" font-size="9" fill="#555">  24V PSU −ve, buck GND, ESP8266 GND, all MOSFET sources</text>
 
   <!-- Right column — symbol legend -->
   <line x1="295" y1="515" x2="295" y2="770" stroke="#eee" stroke-width="1"/>
