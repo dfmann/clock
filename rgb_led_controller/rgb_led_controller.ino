@@ -132,6 +132,14 @@ void setup() {
     analogWriteFreq(PWM_FREQ);
 
     for (uint8_t i = 0; i < 7; i++) {
+#if DEBUG
+        // GPIO1(TX) and GPIO3(RX) are owned by Serial — don't reconfigure them
+        if (BUTTON_PINS[i] == 1 || BUTTON_PINS[i] == 3) {
+            prevStates[i]    = HIGH;
+            debounceTimes[i] = 0;
+            continue;
+        }
+#endif
         // GPIO16 has no internal pull-up — requires external 10kΩ to 3.3V
         pinMode(BUTTON_PINS[i], BUTTON_PINS[i] == 16 ? INPUT : INPUT_PULLUP);
         prevStates[i]    = HIGH;
