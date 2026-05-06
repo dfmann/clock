@@ -19,7 +19,7 @@ const uint16_t PWM_FREQ      = 1000;  // Hz — raise if camera flicker seen
 const uint8_t  INCREMENT_STEP = 32;   // 8 steps across 0–255
 const uint32_t DEBOUNCE_MS   = 50;
 
-bool    powerOn = false;
+bool    powerOn = true;
 bool    rActive = true, gActive = true, bActive = true;
 uint8_t rVal    = 128, gVal    = 128, bVal    = 128;
 
