@@ -113,7 +113,7 @@ void handleButton(uint8_t index) {
 
 void setup() {
 #if DEBUG
-    Serial.begin(115200);
+    Serial.begin(9600);
     delay(100);  // let the serial port settle after boot noise
     Serial.println("\n\n=== ESP8266 RGB LED Controller ===");
     Serial.printf("  Buttons:  GPIO %d(BTN1) %d(BTN2) %d(BTN3) %d(BTN4) %d(BTN5) %d(BTN6) %d(BTN7)\n",
