@@ -12,7 +12,7 @@
 //   These are the same pins as BTN6 and BTN5. While DEBUG=1, BTN5 and
 //   BTN6 will not function. Set DEBUG to 0 for production use.
 
-#define DEBUG 1   // 1 = serial debug output on, 0 = off (restores BTN5/BTN6)
+#define DEBUG 0   // 1 = serial debug output on, 0 = off (restores BTN5/BTN6)
 
 // --- Pin configuration (GPIO numbers) ---
 //                              BTN:  1   2   3   4   5   6   7
@@ -55,36 +55,75 @@ void handleButton(uint8_t index) {
 #if DEBUG
             Serial.printf("[BTN1] Toggle Red → %s\n", rActive ? "ON" : "OFF");
 #endif
+            if (rActive) {
+                rVal = 128;
+                if (!powerOn) {
+                    gVal = 0;
+                    bVal = 0;
+                }
+                powerOn = true;
+            }
             break;
         case 1:
             gActive = !gActive;
 #if DEBUG
             Serial.printf("[BTN2] Toggle Green → %s\n", gActive ? "ON" : "OFF");
 #endif
+            if (gActive) {
+                gVal = 128;
+                if (!powerOn) {
+                    bVal = 0;
+                    rVal = 0;
+                }
+                powerOn = true;
+            }
             break;
         case 2:
             bActive = !bActive;
 #if DEBUG
             Serial.printf("[BTN3] Toggle Blue → %s\n", bActive ? "ON" : "OFF");
 #endif
+            if (bActive) {
+                bVal = 128;
+                if (!powerOn) {
+                    gVal = 0;
+                    rVal = 0;
+                }
+                powerOn = true;
+            }
             break;
         case 3:
             rVal = (rVal + INCREMENT_STEP) % 256;
-            rActive = true;
+            rActive = (rVal != 0);
+            if (!powerOn) {
+                gVal = 0;
+                bVal = 0;
+            }
+            powerOn = true;
 #if DEBUG
             Serial.printf("[BTN4] Increment Red → %d\n", rVal);
 #endif
             break;
         case 4:
             gVal = (gVal + INCREMENT_STEP) % 256;
-            gActive = true;
+            gActive = (gVal != 0);
+            if (!powerOn) {
+                rVal = 0;
+                bVal = 0;
+            }
+            powerOn = true;
 #if DEBUG
             Serial.printf("[BTN5] Increment Green → %d\n", gVal);
 #endif
             break;
         case 5:
             bVal = (bVal + INCREMENT_STEP) % 256;
-            bActive = true;
+            bActive = (bVal != 0);
+            if (!powerOn) {
+                gVal = 0;
+                rVal = 0;
+            }
+            powerOn = true;
 #if DEBUG
             Serial.printf("[BTN6] Increment Blue → %d\n", bVal);
 #endif
@@ -104,6 +143,9 @@ void handleButton(uint8_t index) {
 #if DEBUG
                 Serial.println("[BTN7] Power OFF");
 #endif
+                rActive = false;
+                gActive = false;
+                bActive = false;
             }
             break;
     }
