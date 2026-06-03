@@ -1,27 +1,18 @@
-// ESP8266 RGB LED Strip Controller
-// Requires ESP8266 Arduino core — Boards Manager URL:
-// http://arduino.esp8266.com/stable/package_esp8266com_index.json
+// Arduino Nano RGB LED Strip Controller
 //
-// GPIO caveats (NodeMCU / Wemos D1 Mini):
-//   GPIO 0  (D3) — must be HIGH at boot; do NOT press BTN3 at power-on
-//   GPIO 2  (D4) — must be HIGH at boot; do NOT press BTN4 at power-on
-//   GPIO 1  (TX) — outputs serial noise at boot; fine once running
-//   GPIO 16 (D0) — no internal pull-up; wire 10kΩ from GPIO16 to 3.3V
-//
-// DEBUG NOTE: Serial uses GPIO1 (TX) and GPIO3 (RX).
-//   These are the same pins as BTN6 and BTN5. While DEBUG=1, BTN5 and
-//   BTN6 will not function. Set DEBUG to 0 for production use.
+// PWM outputs use Timer1 (pins 9, 10) and Timer2 (pin 11) — default ~490 Hz.
+// All button pins support INPUT_PULLUP; no external pull-up resistors needed.
+// Serial TX/RX are pins 0/1 — not used for buttons, so DEBUG=1 is always safe.
 
-#define DEBUG 0   // 1 = serial debug output on, 0 = off (restores BTN5/BTN6)
+#define DEBUG 1   // 1 = serial debug output on, 0 = off
 
-// --- Pin configuration (GPIO numbers) ---
-//                              BTN:  1   2   3   4   5   6   7
-const uint8_t BUTTON_PINS[7]       = {5,  4,  0,  2,  3,  1, 16};
-const uint8_t R_PIN = 12;  // D6 — PWM → 100Ω → MOSFET gate (red)
-const uint8_t G_PIN = 13;  // D7 — PWM → 100Ω → MOSFET gate (green)
-const uint8_t B_PIN = 14;  // D5 — PWM → 100Ω → MOSFET gate (blue)
+// --- Pin configuration ---
+//                              BTN:  1   2   3   4    5    6    7
+const uint8_t BUTTON_PINS[7]       = {2,  4,  7,  8,  A1,  A2,  A3};
+const uint8_t R_PIN =  9;  // OC1A — PWM → 100Ω → MOSFET gate (red)
+const uint8_t G_PIN = 10;  // OC1B — PWM → 100Ω → MOSFET gate (green)
+const uint8_t B_PIN = 11;  // OC2A — PWM → 100Ω → MOSFET gate (blue)
 
-const uint16_t PWM_FREQ      = 1000;  // Hz
 const uint8_t  INCREMENT_STEP = 32;   // 8 steps across 0–255
 const uint32_t DEBOUNCE_MS   = 50;
 
@@ -40,11 +31,13 @@ void refresh() {
 
 void printState() {
 #if DEBUG
-    Serial.printf("  state: power=%s  R=%s(%d)  G=%s(%d)  B=%s(%d)\n",
+    char buf[68];
+    snprintf(buf, sizeof(buf), "  state: power=%s  R=%s(%d)  G=%s(%d)  B=%s(%d)",
         powerOn ? "ON" : "OFF",
         rActive ? "on" : "off", rVal,
         gActive ? "on" : "off", gVal,
         bActive ? "on" : "off", bVal);
+    Serial.println(buf);
 #endif
 }
 
@@ -53,7 +46,8 @@ void handleButton(uint8_t index) {
         case 0:
             rActive = !rActive;
 #if DEBUG
-            Serial.printf("[BTN1] Toggle Red → %s\n", rActive ? "ON" : "OFF");
+            Serial.print(F("[BTN1] Toggle Red -> "));
+            Serial.println(rActive ? F("ON") : F("OFF"));
 #endif
             if (rActive) {
                 rVal = 128;
@@ -67,7 +61,8 @@ void handleButton(uint8_t index) {
         case 1:
             gActive = !gActive;
 #if DEBUG
-            Serial.printf("[BTN2] Toggle Green → %s\n", gActive ? "ON" : "OFF");
+            Serial.print(F("[BTN2] Toggle Green -> "));
+            Serial.println(gActive ? F("ON") : F("OFF"));
 #endif
             if (gActive) {
                 gVal = 128;
@@ -81,7 +76,8 @@ void handleButton(uint8_t index) {
         case 2:
             bActive = !bActive;
 #if DEBUG
-            Serial.printf("[BTN3] Toggle Blue → %s\n", bActive ? "ON" : "OFF");
+            Serial.print(F("[BTN3] Toggle Blue -> "));
+            Serial.println(bActive ? F("ON") : F("OFF"));
 #endif
             if (bActive) {
                 bVal = 128;
@@ -101,7 +97,8 @@ void handleButton(uint8_t index) {
             }
             powerOn = true;
 #if DEBUG
-            Serial.printf("[BTN4] Increment Red → %d\n", rVal);
+            Serial.print(F("[BTN4] Increment Red -> "));
+            Serial.println(rVal);
 #endif
             break;
         case 4:
@@ -113,7 +110,8 @@ void handleButton(uint8_t index) {
             }
             powerOn = true;
 #if DEBUG
-            Serial.printf("[BTN5] Increment Green → %d\n", gVal);
+            Serial.print(F("[BTN5] Increment Green -> "));
+            Serial.println(gVal);
 #endif
             break;
         case 5:
@@ -125,7 +123,8 @@ void handleButton(uint8_t index) {
             }
             powerOn = true;
 #if DEBUG
-            Serial.printf("[BTN6] Increment Blue → %d\n", bVal);
+            Serial.print(F("[BTN6] Increment Blue -> "));
+            Serial.println(bVal);
 #endif
             break;
         case 6:
@@ -136,12 +135,14 @@ void handleButton(uint8_t index) {
                 bVal = random(8) * INCREMENT_STEP;
                 rActive = true; gActive = true; bActive = true;
 #if DEBUG
-                Serial.printf("[BTN7] Power ON → random colour R:%d G:%d B:%d\n",
+                char buf[52];
+                snprintf(buf, sizeof(buf), "[BTN7] Power ON -> random colour R:%d G:%d B:%d",
                     rVal, gVal, bVal);
+                Serial.println(buf);
 #endif
             } else {
 #if DEBUG
-                Serial.println("[BTN7] Power OFF");
+                Serial.println(F("[BTN7] Power OFF"));
 #endif
                 rActive = false;
                 gActive = false;
@@ -155,35 +156,26 @@ void handleButton(uint8_t index) {
 
 void setup() {
 #if DEBUG
-    Serial.begin(9600);
-    delay(100);  // let the serial port settle after boot noise
-    Serial.println("\n\n=== ESP8266 RGB LED Controller ===");
-    Serial.printf("  Buttons:  GPIO %d(BTN1) %d(BTN2) %d(BTN3) %d(BTN4) %d(BTN5) %d(BTN6) %d(BTN7)\n",
-        BUTTON_PINS[0], BUTTON_PINS[1], BUTTON_PINS[2], BUTTON_PINS[3],
-        BUTTON_PINS[4], BUTTON_PINS[5], BUTTON_PINS[6]);
-    Serial.printf("  PWM pins: R=GPIO%d  G=GPIO%d  B=GPIO%d\n", R_PIN, G_PIN, B_PIN);
-    Serial.printf("  PWM freq: %d Hz  step: %d/255  debounce: %dms\n",
-        PWM_FREQ, INCREMENT_STEP, DEBOUNCE_MS);
-    Serial.println("  WARNING: BTN5(GPIO3) and BTN6(GPIO1) inactive while DEBUG=1");
-    Serial.println("==================================\n");
+    Serial.begin(115200);
+    Serial.println(F("\n\n=== Arduino Nano RGB LED Controller ==="));
+    Serial.print(F("  Buttons: "));
+    for (uint8_t i = 0; i < 7; i++) {
+        Serial.print(F("BTN")); Serial.print(i + 1);
+        Serial.print('='); Serial.print(BUTTON_PINS[i]);
+        if (i < 6) Serial.print(' ');
+    }
+    Serial.println();
+    char buf[56];
+    snprintf(buf, sizeof(buf), "  PWM: R=%d  G=%d  B=%d  step=%d/255  debounce=%lums",
+        R_PIN, G_PIN, B_PIN, INCREMENT_STEP, DEBOUNCE_MS);
+    Serial.println(buf);
+    Serial.println(F("=======================================\n"));
 #endif
 
-    randomSeed(RANDOM_REG32);
-
-    analogWriteRange(255);
-    analogWriteFreq(PWM_FREQ);
+    randomSeed(analogRead(A0));  // floating pin for entropy
 
     for (uint8_t i = 0; i < 7; i++) {
-#if DEBUG
-        // GPIO1(TX) and GPIO3(RX) are owned by Serial — don't reconfigure them
-        if (BUTTON_PINS[i] == 1 || BUTTON_PINS[i] == 3) {
-            prevStates[i]    = HIGH;
-            debounceTimes[i] = 0;
-            continue;
-        }
-#endif
-        // GPIO16 has no internal pull-up — requires external 10kΩ to 3.3V
-        pinMode(BUTTON_PINS[i], BUTTON_PINS[i] == 16 ? INPUT : INPUT_PULLUP);
+        pinMode(BUTTON_PINS[i], INPUT_PULLUP);
         prevStates[i]    = HIGH;
         debounceTimes[i] = 0;
     }
@@ -195,7 +187,7 @@ void setup() {
     refresh();
 
 #if DEBUG
-    Serial.println("Ready. Waiting for button presses...");
+    Serial.println(F("Ready. Waiting for button presses..."));
     printState();
 #endif
 }
