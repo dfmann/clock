@@ -15,10 +15,11 @@ const uint8_t B_PIN = 11;  // OC2A — PWM → 100Ω → MOSFET gate (blue)
 
 const uint8_t  INCREMENT_STEP = 32;   // 8 steps across 0–255
 const uint32_t DEBOUNCE_MS   = 50;
+const uint8_t DEFAULT_BRIGHTNESS = 128;
 
 bool    powerOn = true;
 bool    rActive = true, gActive = true, bActive = true;
-uint8_t rVal    = 128, gVal    = 128, bVal    = 128;
+uint8_t rVal    = DEFAULT_BRIGHTNESS, gVal    = DEFAULT_BRIGHTNESS, bVal    = DEFAULT_BRIGHTNESS;
 
 bool     prevStates[7];
 uint32_t debounceTimes[7];
@@ -50,7 +51,7 @@ void handleButton(uint8_t index) {
             Serial.println(rActive ? F("ON") : F("OFF"));
 #endif
             if (rActive) {
-                rVal = 128;
+                rVal = DEFAULT_BRIGHTNESS;
                 if (!powerOn) {
                     gVal = 0;
                     bVal = 0;
@@ -65,7 +66,7 @@ void handleButton(uint8_t index) {
             Serial.println(gActive ? F("ON") : F("OFF"));
 #endif
             if (gActive) {
-                gVal = 128;
+                gVal = DEFAULT_BRIGHTNESS;
                 if (!powerOn) {
                     bVal = 0;
                     rVal = 0;
@@ -80,7 +81,7 @@ void handleButton(uint8_t index) {
             Serial.println(bActive ? F("ON") : F("OFF"));
 #endif
             if (bActive) {
-                bVal = 128;
+                bVal = DEFAULT_BRIGHTNESS;
                 if (!powerOn) {
                     gVal = 0;
                     rVal = 0;
@@ -130,9 +131,12 @@ void handleButton(uint8_t index) {
         case 6:
             powerOn = !powerOn;
             if (powerOn) {
-                rVal = random(8) * INCREMENT_STEP;
-                gVal = random(8) * INCREMENT_STEP;
-                bVal = random(8) * INCREMENT_STEP;
+                //rVal = random(8) * INCREMENT_STEP;
+                //gVal = random(8) * INCREMENT_STEP;
+                //bVal = random(8) * INCREMENT_STEP;
+                rVal = DEFAULT_BRIGHTNESS;
+                gVal = DEFAULT_BRIGHTNESS;
+                bVal = DEFAULT_BRIGHTNESS;
                 rActive = true; gActive = true; bActive = true;
 #if DEBUG
                 char buf[52];
