@@ -1,18 +1,17 @@
-# ESP8266 RGB LED Strip Controller
+# Arduino Nano RGB LED Strip Controller
 
-Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and three N-channel MOSFETs. Written as an Arduino sketch targeting the ESP8266 (NodeMCU / Wemos D1 Mini or compatible).
+Controls a 24V non-addressable common-cathode RGB LED strip via 7 buttons and three N-channel MOSFETs. Written as an Arduino sketch targeting the Arduino Nano (ATmega328P).
 
 ## Hardware Requirements
 
-- ESP8266 development board (e.g. NodeMCU v2/v3, Wemos D1 Mini)
+- Arduino Nano (ATmega328P)
 - 24V non-addressable RGB LED strip (common-cathode / shared GND)
 - 24V power supply
-- Buck converter module (24V → 3.3V, e.g. LM2596 set to 3.3V) to power the ESP8266
+- Buck converter module (24V → 5V, e.g. LM2596 set to 5V) to power the Arduino Nano
 - 3× N-channel MOSFET — IRLZ44N recommended (logic-level, 55V 47A TO-220)
 - 3× 100Ω resistor (gate series resistors)
 - 3× 10kΩ resistor (gate pull-down resistors)
 - 7× momentary push buttons
-- 1× additional 10kΩ resistor (external pull-up for BTN7 on GPIO16)
 
 ## Wiring
 
@@ -20,89 +19,82 @@ See `circuit_diagram.svg` for the full schematic.
 
 ### Buttons
 
-| Button | GPIO | NodeMCU label | Function               | Notes                          |
-|--------|------|---------------|------------------------|--------------------------------|
-| 1      | 5    | D1            | Toggle red channel     |                                |
-| 2      | 4    | D2            | Toggle green channel   |                                |
-| 3      | 0    | D3            | Toggle blue channel    | Do not press at power-on       |
-| 4      | 2    | D4            | Increment red value    | Do not press at power-on       |
-| 5      | 3    | RX            | Increment green value  | Do not use Serial in sketch    |
-| 6      | 1    | TX            | Increment blue value   | Avoid pressing during upload   |
-| 7      | 16   | D0            | Master toggle (on/off) | Needs external 10kΩ to 3.3V   |
+| Button | Pin | Function               | Notes                     |
+|--------|-----|------------------------|---------------------------|
+| 1      | D2  | Toggle red channel     |                           |
+| 2      | D4  | Toggle green channel   |                           |
+| 3      | D7  | Toggle blue channel    |                           |
+| 4      | D8  | Increment red value    |                           |
+| 5      | A1  | Increment green value  |                           |
+| 6      | A2  | Increment blue value   |                           |
+| 7      | A3  | Master toggle (on/off) |                           |
 
-Buttons 1–6 wire between pin and GND — internal pull-ups enabled in software.
-**Button 7 (GPIO16)** has no internal pull-up: wire a 10kΩ resistor from GPIO16 to 3.3V, then connect the button between GPIO16 and GND.
+All buttons wire between pin and GND — internal pull-ups are enabled in software. No external pull-up resistors are required.
 
 ### MOSFET outputs
 
-| GPIO | NodeMCU label | Channel | MOSFET connection                          |
-|------|---------------|---------|--------------------------------------------|
-| 12   | D6            | Red     | IRLZ44N — drain to strip R−, source to GND |
-| 13   | D7            | Green   | IRLZ44N — drain to strip G−, source to GND |
-| 14   | D5            | Blue    | IRLZ44N — drain to strip B−, source to GND |
+| Pin | Timer | Channel | MOSFET connection                          |
+|-----|-------|---------|--------------------------------------------|
+| D9  | OC1A  | Red     | IRLZ44N — drain to strip R−, source to GND |
+| D10 | OC1B  | Green   | IRLZ44N — drain to strip G−, source to GND |
+| D11 | OC2A  | Blue    | IRLZ44N — drain to strip B−, source to GND |
 
-Each gate: ESP8266 GPIO → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
+Each gate: Arduino pin → 100Ω → MOSFET gate, with 10kΩ from gate to GND.
 
 ### Power
 
 - 24V PSU → LED strip +24V rail
-- 24V PSU → Buck converter IN+ → Buck converter OUT+ → ESP8266 3.3V pin
-- All GNDs (PSU −ve, buck GND, ESP8266 GND, MOSFET sources) share one bus
+- 24V PSU → Buck converter IN+ → Buck converter OUT+ (5V) → Arduino Nano 5V pin
+- All GNDs (PSU −ve, buck GND, Arduino GND, MOSFET sources) share one bus
 
-> **Important:** ESP8266 runs at **3.3V** — set the buck converter to 3.3V, not 5V. The IRLZ44N MOSFETs switch fully at 3.3V gate voltage.
+> **Important:** Power the Nano via its **5V pin** from the buck converter — do not feed 24V into VIN, as the onboard regulator cannot handle that voltage drop. The IRLZ44N MOSFETs switch fully at 5V gate voltage.
 
 ## Button Behaviour
 
 | Button | Action |
 |--------|--------|
-| 1 | Toggles red channel on/off |
-| 2 | Toggles green channel on/off |
-| 3 | Toggles blue channel on/off |
-| 4 | Increments red brightness by one step (8 steps, wraps around) and enables red |
-| 5 | Increments green brightness by one step and enables green |
-| 6 | Increments blue brightness by one step and enables blue |
+| 1 | Toggles red channel on/off; turning ON sets red to mid-brightness and powers the strip |
+| 2 | Toggles green channel on/off; turning ON sets green to mid-brightness and powers the strip |
+| 3 | Toggles blue channel on/off; turning ON sets blue to mid-brightness and powers the strip |
+| 4 | Increments red brightness one step (8 steps, wraps to 0), powers the strip on |
+| 5 | Increments green brightness one step, powers the strip on |
+| 6 | Increments blue brightness one step, powers the strip on |
 | 7 | Master power toggle — turning ON picks a random colour; OFF blanks all LEDs |
+
+When a channel button turns a channel on while the strip is powered off, the other two channels are zeroed so only that colour is active.
 
 ## Configuration
 
 Edit the constants at the top of `rgb_led_controller/rgb_led_controller.ino`:
 
-| Constant        | Default          | Description                                      |
-|-----------------|------------------|--------------------------------------------------|
-| `BUTTON_PINS`   | 5,4,0,2,3,1,16   | GPIO numbers for each button                     |
-| `R_PIN`         | 12               | PWM output for red MOSFET gate (D6)              |
-| `G_PIN`         | 13               | PWM output for green MOSFET gate (D7)            |
-| `B_PIN`         | 14               | PWM output for blue MOSFET gate (D5)             |
-| `PWM_FREQ`      | 1000             | PWM frequency in Hz (raise to 5000+ for cameras) |
-| `INCREMENT_STEP`| 32               | Brightness step per press (8 steps across 0–255) |
-| `DEBOUNCE_MS`   | 50               | Button debounce window in milliseconds           |
+| Constant        | Default         | Description                                      |
+|-----------------|-----------------|--------------------------------------------------|
+| `BUTTON_PINS`   | 2,4,7,8,A1,A2,A3| Pin numbers for each button                      |
+| `R_PIN`         | 9               | PWM output for red MOSFET gate (D9, OC1A)        |
+| `G_PIN`         | 10              | PWM output for green MOSFET gate (D10, OC1B)     |
+| `B_PIN`         | 11              | PWM output for blue MOSFET gate (D11, OC2A)      |
+| `INCREMENT_STEP`| 32              | Brightness step per press (8 steps across 0–255) |
+| `DEBOUNCE_MS`   | 50              | Button debounce window in milliseconds           |
+
+PWM frequency is fixed at the hardware default (~490 Hz on D9/D10, ~980 Hz on D11).
 
 ## Installation
 
-### 1. Add ESP8266 board support to Arduino IDE
-
-In Arduino IDE: **File → Preferences → Additional boards manager URLs**, add:
-
-```
-http://arduino.esp8266.com/stable/package_esp8266com_index.json
-```
-
-Then **Tools → Board → Boards Manager**, search for `esp8266` by ESP8266 Community, and install.
-
-### 2. Linux USB permissions
+### 1. Linux USB permissions
 
 ```bash
 sudo usermod -a -G dialout $USER
 newgrp dialout
 ```
 
-ESP8266 boards typically appear as `/dev/ttyUSB0` (CH340 chip) or `/dev/ttyACM0` (CP210x chip).
+The Nano typically appears as `/dev/ttyUSB0` (CH340 chip) or `/dev/ttyACM0` (CP210x/FTDI chip).
 
-### 3. Upload
+### 2. Upload
 
 1. Open `rgb_led_controller/rgb_led_controller.ino` in the Arduino IDE
-2. **Tools → Board → ESP8266 Boards** → select your board (e.g. *NodeMCU 1.0* or *LOLIN(WEMOS) D1 Mini*)
-3. **Tools → Port** → select `/dev/ttyUSB0` or `/dev/ttyACM0`
-4. Click **Upload**
+2. **Tools → Board → Arduino AVR Boards** → select *Arduino Nano*
+3. **Tools → Processor** → select *ATmega328P* (or *ATmega328P (Old Bootloader)* for clone boards)
+4. **Tools → Port** → select `/dev/ttyUSB0` or `/dev/ttyACM0`
+5. Click **Upload**
 
-No external libraries required.
+No external libraries required. No additional Boards Manager URL needed — Arduino AVR Boards is included with the Arduino IDE.
